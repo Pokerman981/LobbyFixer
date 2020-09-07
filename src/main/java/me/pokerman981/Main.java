@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2020. Troy Gidney
+ * All rights reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ *
+ * File Last Modified: 9/7/20, 2:27 PM
+ * File: Main.java
+ * Project: LobbyFixer
+ */
+
 package me.pokerman981;
 
 import net.luckperms.api.LuckPerms;
@@ -10,7 +21,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,23 +49,30 @@ public class Main extends JavaPlugin implements CommandExecutor {
             list.forEach(node -> {
                 Group group = this.luckPerms.getGroupManager().getGroup(node.getKey().replace("group.", ""));
                 if (group == null) return;
+                if (node.getContexts().isEmpty()) return;
                 if (group.getWeight().orElse(0) > (int) objects[0]) {
                     objects[0] = group.getWeight().getAsInt();
                     objects[1] = group.getName();
                 }
             });
 
-            System.out.println("USER CURRENT PERMISSIONS");
-            System.out.println(list);
+            if (objects[1] != "null") {
+                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
+                        "lp user %player% parent set %group% server=lobby"
+                                .replace("%player%", player.getUniqueId().toString())
+                                .replace("%group%", objects[1].toString()));
 
-            System.out.println("TOP FOUND RANK");
-            System.out.println(Arrays.toString(objects));
-
+                System.out.println("[FixRank] Set %player%'s to group %group% in context server=lobby"
+                        .replace("%player%", player.getName() + "(" + player.getUniqueId().toString() + ")")
+                        .replace("%group%", objects[1].toString()));
+            } else {
+                System.out.println("Could not find %player%'s highest context rank!"
+                        .replace("%player%", player.getName() + "(" + player.getUniqueId().toString() + ")"));
+            }
             return true;
         });
 
     }
-
 
 
 }
