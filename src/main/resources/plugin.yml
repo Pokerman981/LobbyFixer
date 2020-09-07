@@ -1,0 +1,7 @@
+  name: FixRank
+  main: me.pokerman981.Main
+  version: "1.0"
+  commands:
+    fixrank:
+      usage: /fixrank
+      permission: "fixrank.fix"
